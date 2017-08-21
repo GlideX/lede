@@ -46,11 +46,6 @@ CONFIG_TARGET_mvebu=y
 # CONFIG_TARGET_x86 is not set
 # CONFIG_TARGET_MULTI_PROFILE is not set
 # CONFIG_TARGET_mvebu_Default is not set
-# CONFIG_TARGET_mvebu_Caiman is not set
-# CONFIG_TARGET_mvebu_Cobra is not set
-# CONFIG_TARGET_mvebu_Mamba is not set
-# CONFIG_TARGET_mvebu_Shelby is not set
-# CONFIG_TARGET_mvebu_Rango is not set
 # CONFIG_TARGET_mvebu_DEVICE_linksys-wrt1200ac is not set
 CONFIG_TARGET_mvebu_DEVICE_linksys-wrt1900acv2=y
 # CONFIG_TARGET_mvebu_DEVICE_linksys-wrt3200acm is not set
@@ -311,8 +306,9 @@ CONFIG_KERNEL_PRINTK_TIME=y
 # Stripping options
 #
 # CONFIG_NO_STRIP is not set
-# CONFIG_USE_STRIP is not set
-CONFIG_USE_SSTRIP=y
+CONFIG_USE_STRIP=y
+# CONFIG_USE_SSTRIP is not set
+CONFIG_STRIP_ARGS="--strip-all"
 # CONFIG_STRIP_KERNEL_EXPORTS is not set
 # CONFIG_USE_MKLIBS is not set
 CONFIG_USE_UCLIBCXX=y
@@ -323,7 +319,7 @@ CONFIG_USE_UCLIBCXX=y
 #
 CONFIG_PKG_CHECK_FORMAT_SECURITY=y
 # CONFIG_PKG_CC_STACKPROTECTOR_NONE is not set
-CONFIG_PKG_CC_STACKPROTECTOR_REGULAR=y
+# CONFIG_PKG_CC_STACKPROTECTOR_REGULAR is not set
 # CONFIG_KERNEL_CC_STACKPROTECTOR_NONE is not set
 CONFIG_KERNEL_CC_STACKPROTECTOR_REGULAR=y
 # CONFIG_KERNEL_CC_STACKPROTECTOR_STRONG is not set
@@ -333,7 +329,7 @@ CONFIG_PKG_FORTIFY_SOURCE_1=y
 # CONFIG_PKG_RELRO_NONE is not set
 # CONFIG_PKG_RELRO_PARTIAL is not set
 CONFIG_PKG_RELRO_FULL=y
-# CONFIG_DEVEL is not set
+CONFIG_DEVEL=y
 # CONFIG_BROKEN is not set
 CONFIG_BINARY_FOLDER=""
 CONFIG_DOWNLOAD_FOLDER=""
@@ -344,24 +340,57 @@ CONFIG_TARGET_ROOTFS_DIR=""
 # CONFIG_CCACHE is not set
 CONFIG_EXTERNAL_KERNEL_TREE=""
 CONFIG_KERNEL_GIT_CLONE_URI=""
+# CONFIG_BUILD_LOG is not set
+# CONFIG_SRC_TREE_OVERRIDE is not set
 CONFIG_EXTRA_OPTIMIZATION="-fno-caller-saves -fno-plt"
+# CONFIG_TARGET_OPTIONS is not set
 CONFIG_TARGET_OPTIMIZATION="-Os -pipe -mcpu=cortex-a9 -mfpu=vfpv3-d16"
+# CONFIG_EXTERNAL_TOOLCHAIN is not set
+CONFIG_NEED_TOOLCHAIN=y
+CONFIG_TOOLCHAINOPTS=y
 # CONFIG_EXTRA_TARGET_ARCH is not set
+
+#
+# Binary tools
+#
+CONFIG_BINUTILS_USE_VERSION_2_25_1=y
+# CONFIG_BINUTILS_USE_VERSION_2_27 is not set
 CONFIG_EXTRA_BINUTILS_CONFIG_OPTIONS=""
+
+#
+# Compiler
+#
+CONFIG_GCC_USE_VERSION_5=y
+# CONFIG_GCC_USE_VERSION_6 is not set
+# CONFIG_GCC_USE_GRAPHITE is not set
 CONFIG_EXTRA_GCC_CONFIG_OPTIONS=""
+CONFIG_SSP_SUPPORT=y
 # CONFIG_SJLJ_EXCEPTIONS is not set
 # CONFIG_INSTALL_LIBGCJ is not set
 # CONFIG_INSTALL_GFORTRAN is not set
+# CONFIG_INSTALL_GCCGO is not set
+
+#
+# C Library
+#
+CONFIG_LIBC_USE_GLIBC=y
+# CONFIG_LIBC_USE_MUSL is not set
+CONFIG_GLIBC_USE_VERSION_2_24=y
+
+#
+# Debuggers
+#
 CONFIG_GDB=y
 # CONFIG_INSIGHT is not set
-CONFIG_USE_MUSL=y
+CONFIG_USE_GLIBC=y
 CONFIG_BINUTILS_VERSION_2_25_1=y
 CONFIG_BINUTILS_VERSION="2.25.1"
 CONFIG_GCC_VERSION="5.4.0"
-CONFIG_MUSL_VERSION="1.1.16"
-CONFIG_LIBC="musl"
-CONFIG_LIBC_VERSION="1.1.16"
-CONFIG_TARGET_SUFFIX="muslgnueabi"
+CONFIG_GLIBC_VERSION="2.24"
+CONFIG_GLIBC_VERSION_2_24=y
+CONFIG_LIBC="glibc"
+CONFIG_LIBC_VERSION="2.24"
+CONFIG_TARGET_SUFFIX="gnueabi"
 # CONFIG_IB is not set
 # CONFIG_SDK is not set
 # CONFIG_MAKE_TOOLCHAIN is not set
@@ -2130,7 +2159,9 @@ CONFIG_PACKAGE_libc=y
 CONFIG_PACKAGE_libgcc=y
 CONFIG_PACKAGE_libpthread=y
 CONFIG_PACKAGE_librt=y
+CONFIG_PACKAGE_libssp=y
 CONFIG_PACKAGE_libstdcpp=y
+# CONFIG_PACKAGE_libthread-db is not set
 CONFIG_PACKAGE_logd=y
 # CONFIG_PACKAGE_mksh is not set
 CONFIG_PACKAGE_mtd=y
@@ -2733,6 +2764,7 @@ CONFIG_PACKAGE_kmod-usb-core=y
 # CONFIG_PACKAGE_kmod-usb-serial is not set
 CONFIG_PACKAGE_kmod-usb-storage=y
 # CONFIG_PACKAGE_kmod-usb-storage-extras is not set
+# CONFIG_PACKAGE_kmod-usb-test is not set
 # CONFIG_PACKAGE_kmod-usb-uhci is not set
 # CONFIG_PACKAGE_kmod-usb-wdm is not set
 # CONFIG_PACKAGE_kmod-usb-yealink is not set
@@ -3040,6 +3072,7 @@ CONFIG_PACKAGE_python-multiprocessing=y
 # CONFIG_PACKAGE_python-mysql is not set
 CONFIG_PACKAGE_python-ncurses=y
 CONFIG_PACKAGE_python-openssl=y
+# CONFIG_PACKAGE_python-packages is not set
 # CONFIG_PACKAGE_python-parsley is not set
 # CONFIG_PACKAGE_python-pcapy is not set
 # CONFIG_PACKAGE_python-pip is not set
@@ -3379,6 +3412,7 @@ CONFIG_PACKAGE_jansson=y
 # CONFIG_PACKAGE_libbfd is not set
 # CONFIG_PACKAGE_libblkid is not set
 CONFIG_PACKAGE_libblobmsg-json=y
+# CONFIG_PACKAGE_libbsd is not set
 # CONFIG_PACKAGE_libcanfestival is not set
 CONFIG_PACKAGE_libcap=y
 # CONFIG_PACKAGE_libcares is not set
@@ -4311,6 +4345,7 @@ CONFIG_PACKAGE_ntpdate=y
 # CONFIG_PACKAGE_strongswan is not set
 # CONFIG_PACKAGE_strongswan-charon is not set
 # CONFIG_PACKAGE_strongswan-default is not set
+# CONFIG_PACKAGE_strongswan-full is not set
 # CONFIG_PACKAGE_strongswan-isakmp is not set
 # CONFIG_PACKAGE_strongswan-libtls is not set
 # CONFIG_PACKAGE_strongswan-minimal is not set
@@ -5067,6 +5102,9 @@ CONFIG_PACKAGE_jshn=y
 # CONFIG_PACKAGE_kexec-tools is not set
 # CONFIG_PACKAGE_kmod is not set
 # CONFIG_PACKAGE_lcd4linux-custom is not set
+# CONFIG_PACKAGE_lcd4linux-full is not set
+# CONFIG_PACKAGE_ldconfig is not set
+# CONFIG_PACKAGE_ldd is not set
 # CONFIG_PACKAGE_less is not set
 # CONFIG_PACKAGE_less-wide is not set
 # CONFIG_PACKAGE_libimobiledevice-utils is not set
