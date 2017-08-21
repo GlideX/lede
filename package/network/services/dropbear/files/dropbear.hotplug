@@ -1,0 +1,10 @@
+NAME=dropbear
+CONFIG=/etc/config/dropbear
+COMMAND=/usr/sbin/$NAME
+
+[ "$ACTION" = "ifup" -a "$INTERFACE" = "lan" ] && {
+        [ -x $COMMAND ] && [ -r $CONFIG ] && {
+		/etc/init.d/dropbear restart
+        } &
+}
+

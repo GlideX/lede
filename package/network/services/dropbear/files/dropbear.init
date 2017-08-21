@@ -2,8 +2,8 @@
 # Copyright (C) 2006-2010 OpenWrt.org
 # Copyright (C) 2006 Carlos Sobrinho
 
-START=50
-STOP=50
+START=90
+STOP=90
 
 USE_PROCD=1
 PROG=/usr/sbin/dropbear
