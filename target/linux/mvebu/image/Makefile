@@ -112,7 +112,7 @@ define Device/linksys
 	tc wireless-tools ip-full ca-certificates \
 	libiwinfo iwinfo terminfo libncurses \
 	bash openssh-client openssh-keygen openssh-client-utils \
-	python gnupg
+	python gnupg netcat
 endef
 
 define Device/armada-385-linksys
