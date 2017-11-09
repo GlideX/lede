@@ -4576,7 +4576,7 @@ CONFIG_PACKAGE_hostapd-common=y
 # CONFIG_PACKAGE_https_dns_proxy is not set
 # CONFIG_PACKAGE_ibrdtn-tools is not set
 # CONFIG_PACKAGE_ibrdtnd is not set
-# CONFIG_PACKAGE_iftop is not set
+CONFIG_PACKAGE_iftop=y
 # CONFIG_PACKAGE_iotivity is not set
 # CONFIG_PACKAGE_iotivity-cpp is not set
 # CONFIG_PACKAGE_iotivity-example-garage is not set
