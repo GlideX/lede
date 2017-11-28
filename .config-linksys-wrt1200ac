@@ -4563,7 +4563,12 @@ CONFIG_NGINX_PCRE=y
 # CONFIG_PACKAGE_eapol-test is not set
 # CONFIG_PACKAGE_esniper is not set
 # CONFIG_PACKAGE_etherwake is not set
-# CONFIG_PACKAGE_ethtool is not set
+CONFIG_PACKAGE_ethtool=y
+
+#
+# Configuration
+#
+CONFIG_ETHTOOL_PRETTY_DUMP=y
 # CONFIG_PACKAGE_fakeidentd is not set
 # CONFIG_PACKAGE_gnunet is not set
 # CONFIG_PACKAGE_gpsd is not set
