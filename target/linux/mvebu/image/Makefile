@@ -92,7 +92,32 @@ endef
 
 define Device/linksys
   DEVICE_TITLE := Linksys $(1)
-  DEVICE_PACKAGES := kmod-mwlwifi wpad-mini swconfig
+#  DEVICE_PACKAGES := kmod-mwlwifi wpad-mini swconfig
+  DEVICE_PACKAGES := \
+	kmod-usb2 kmod-usb3 kmod-usb-storage \
+	kmod-i2c-core kmod-i2c-mv64xxx \
+	kmod-ata-core kmod-ata-mvebu-ahci \
+	kmod-rtc-armada38x kmod-thermal-armada \
+	kmod-gpio-button-hotplug kmod-hwmon-tmp421 \
+	kmod-leds-pca963x kmod-ledtrig-usbdev \
+	kmod-mwlwifi kmod-tun kmod-llc kmod-stp \
+	kmod-bridge kmod-ebtables \
+	kmod-sched-core kmod-sched kmod-sched-connmark \
+	kmod-netem kmod-ipt-core kmod-ipt-conntrack \
+	kmod-ipt-conntrack-extra kmod-ifb \
+	wpad swconfig libpthread libstdcpp zlib \
+	libopenssl coreutils coreutils-sha256sum coreutils-base64 \
+	openssl-util radsecproxy libxml2 libpcre \
+	php7 php7-cgi php7-fastcgi nginx \
+	php7-mod-session php7-mod-json php7-mod-openssl \
+	uclibcxx librt jansson jupiter \
+	libcurl curl libcap ntpd ntpdate \
+	liblzo zoneinfo-core zoneinfo-asia zoneinfo-europe \
+	libwrap iperf3 ebtables nmap nping \
+	tc wireless-tools ip-full ca-certificates \
+	libiwinfo iwinfo terminfo libncurses \
+	bash openssh-client openssh-keygen openssh-client-utils \
+	python gnupg netcat
 endef
 
 define Device/armada-385-linksys
