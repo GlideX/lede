@@ -11,13 +11,39 @@ NF_KMOD:=1
 include $(INCLUDE_DIR)/netfilter.mk
 
 
+define KernelPackage/nf-reject
+  SUBMENU:=$(NF_MENU)
+  TITLE:=Netfilter IPv4 reject support
+  KCONFIG:= \
+	CONFIG_NETFILTER=y \
+	CONFIG_NETFILTER_ADVANCED=y \
+	$(KCONFIG_NF_REJECT)
+  FILES:=$(foreach mod,$(NF_REJECT-m),$(LINUX_DIR)/net/$(mod).ko)
+  AUTOLOAD:=$(call AutoProbe,$(notdir $(NF_REJECT-m)))
+endef
+
+$(eval $(call KernelPackage,nf-reject))
+
+
+define KernelPackage/nf-reject6
+  SUBMENU:=$(NF_MENU)
+  TITLE:=Netfilter IPv6 reject support
+  KCONFIG:= \
+	CONFIG_NETFILTER=y \
+	CONFIG_NETFILTER_ADVANCED=y \
+	$(KCONFIG_NF_REJECT6)
+  DEPENDS:=@IPV6
+  FILES:=$(foreach mod,$(NF_REJECT6-m),$(LINUX_DIR)/net/$(mod).ko)
+  AUTOLOAD:=$(call AutoProbe,$(notdir $(NF_REJECT6-m)))
+endef
+
+$(eval $(call KernelPackage,nf-reject6))
+
+
 define KernelPackage/nf-ipt
   SUBMENU:=$(NF_MENU)
   TITLE:=Iptables core
-  KCONFIG:= \
-  	CONFIG_NETFILTER=y \
-	CONFIG_NETFILTER_ADVANCED=y \
-	$(KCONFIG_NF_IPT)
+  KCONFIG:=$(KCONFIG_NF_IPT)
   FILES:=$(foreach mod,$(NF_IPT-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(NF_IPT-m)))
 endef
@@ -31,7 +57,7 @@ define KernelPackage/nf-ipt6
   KCONFIG:=$(KCONFIG_NF_IPT6)
   FILES:=$(foreach mod,$(NF_IPT6-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(NF_IPT6-m)))
-  DEPENDS:=+kmod-nf-ipt +kmod-nf-conntrack6
+  DEPENDS:=+kmod-nf-ipt
 endef
 
 $(eval $(call KernelPackage,nf-ipt6))
@@ -44,7 +70,7 @@ define KernelPackage/ipt-core
   KCONFIG:=$(KCONFIG_IPT_CORE)
   FILES:=$(foreach mod,$(IPT_CORE-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(IPT_CORE-m)))
-  DEPENDS:=+kmod-nf-ipt
+  DEPENDS:=+kmod-nf-reject +kmod-nf-ipt
 endef
 
 define KernelPackage/ipt-core/description
@@ -68,6 +94,7 @@ define KernelPackage/nf-conntrack
   KCONFIG:= \
         CONFIG_NETFILTER=y \
         CONFIG_NETFILTER_ADVANCED=y \
+        CONFIG_NF_CONNTRACK_MARK=y \
         CONFIG_NF_CONNTRACK_ZONES=y \
 	$(KCONFIG_NF_CONNTRACK)
   FILES:=$(foreach mod,$(NF_CONNTRACK-m),$(LINUX_DIR)/net/$(mod).ko)
@@ -93,7 +120,7 @@ define KernelPackage/nf-nat
   SUBMENU:=$(NF_MENU)
   TITLE:=Netfilter NAT
   KCONFIG:=$(KCONFIG_NF_NAT)
-  DEPENDS:=+kmod-nf-conntrack +kmod-nf-ipt
+  DEPENDS:=+kmod-nf-conntrack
   FILES:=$(foreach mod,$(NF_NAT-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(NF_NAT-m)))
 endef
@@ -105,7 +132,7 @@ define KernelPackage/nf-nat6
   SUBMENU:=$(NF_MENU)
   TITLE:=Netfilter IPV6-NAT
   KCONFIG:=$(KCONFIG_NF_NAT6)
-  DEPENDS:=+kmod-nf-conntrack6 +kmod-nf-ipt6 +kmod-nf-nat
+  DEPENDS:=+kmod-nf-conntrack6 +kmod-nf-nat
   FILES:=$(foreach mod,$(NF_NAT6-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(NF_NAT6-m)))
 endef
@@ -360,8 +387,6 @@ define KernelPackage/nf-nathelper/description
  Default Netfilter (IPv4) Conntrack and NAT helpers
  Includes:
  - ftp
- - irc
- - tftp
 endef
 
 $(eval $(call KernelPackage,nf-nathelper))
@@ -381,11 +406,13 @@ define KernelPackage/nf-nathelper-extra/description
  Includes:
  - amanda
  - h323
+ - irc
  - mms
  - pptp
  - proto_gre
  - sip
  - snmp_basic
+ - tftp
  - broadcast
 endef
 
@@ -446,10 +473,9 @@ $(eval $(call KernelPackage,ipt-nfqueue))
 define KernelPackage/ipt-debug
   TITLE:=Module for debugging/development
   KCONFIG:=$(KCONFIG_IPT_DEBUG)
-  DEFAULT:=n
   FILES:=$(foreach mod,$(IPT_DEBUG-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(IPT_DEBUG-m)))
-  $(call AddDepends/ipt)
+  $(call AddDepends/ipt,+kmod-ipt-raw +IPV6:kmod-ipt-raw6)
 endef
 
 define KernelPackage/ipt-debug/description
@@ -477,7 +503,7 @@ $(eval $(call KernelPackage,ipt-led))
 
 define KernelPackage/ipt-tproxy
   TITLE:=Transparent proxying support
-  DEPENDS+=+kmod-ipt-conntrack +IPV6:kmod-ip6tables
+  DEPENDS+=+kmod-ipt-conntrack +IPV6:kmod-nf-conntrack6 +IPV6:kmod-ip6tables
   KCONFIG:= \
   	CONFIG_NETFILTER_XT_MATCH_SOCKET \
   	CONFIG_NETFILTER_XT_TARGET_TPROXY
@@ -528,6 +554,23 @@ define KernelPackage/ipt-u32/description
 endef
 
 $(eval $(call KernelPackage,ipt-u32))
+
+define KernelPackage/ipt-checksum
+  TITLE:=CHECKSUM support
+  KCONFIG:= \
+  	CONFIG_NETFILTER_XT_TARGET_CHECKSUM
+  FILES:= \
+  	$(LINUX_DIR)/net/netfilter/xt_CHECKSUM.ko \
+  	$(foreach mod,$(IPT_CHECKSUM-m),$(LINUX_DIR)/net/$(mod).ko)
+  AUTOLOAD:=$(call AutoProbe,$(notdir $(IPT_CHECKSUM-m)))
+  $(call AddDepends/ipt)
+endef
+
+define KernelPackage/ipt-checksum/description
+  Kernel modules for CHECKSUM fillin target
+endef
+
+$(eval $(call KernelPackage,ipt-checksum))
 
 
 define KernelPackage/ipt-iprange
@@ -619,7 +662,7 @@ $(eval $(call KernelPackage,ipt-extra))
 define KernelPackage/ip6tables
   SUBMENU:=$(NF_MENU)
   TITLE:=IPv6 modules
-  DEPENDS:=+kmod-nf-ipt6 +kmod-ipt-core +kmod-ipt-conntrack
+  DEPENDS:=+kmod-nf-reject6 +kmod-nf-ipt6 +kmod-ipt-core
   KCONFIG:=$(KCONFIG_IPT_IPV6)
   FILES:=$(foreach mod,$(IPT_IPV6-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoLoad,42,$(notdir $(IPT_IPV6-m)))
@@ -836,20 +879,34 @@ endef
 
 $(eval $(call KernelPackage,ipt-hashlimit))
 
+define KernelPackage/ipt-rpfilter
+  SUBMENU:=$(NF_MENU)
+  TITLE:=Netfilter rpfilter match
+  DEPENDS:=+kmod-ipt-core
+  KCONFIG:=$(KCONFIG_IPT_RPFILTER)
+  FILES:=$(realpath \
+	$(LINUX_DIR)/net/ipv4/netfilter/ipt_rpfilter.ko \
+	$(LINUX_DIR)/net/ipv6/netfilter/ip6t_rpfilter.ko)
+  AUTOLOAD:=$(call AutoProbe,ipt_rpfilter ip6t_rpfilter)
+  $(call KernelPackage/ipt)
+endef
+
+define KernelPackage/ipt-rpfilter/description
+ Kernel modules support for the Netfilter rpfilter match
+endef
+
+$(eval $(call KernelPackage,ipt-rpfilter))
+
 
 define KernelPackage/nft-core
   SUBMENU:=$(NF_MENU)
   TITLE:=Netfilter nf_tables support
-  DEPENDS:=+kmod-nfnetlink +kmod-nf-conntrack6 +kmod-nf-ipt +kmod-nf-ipt6
+  DEPENDS:=+kmod-nfnetlink +kmod-nf-reject +kmod-nf-reject6 +kmod-nf-conntrack6
   FILES:=$(foreach mod,$(NFT_CORE-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(NFT_CORE-m)))
   KCONFIG:= \
-	CONFIG_NETFILTER=y \
-	CONFIG_NETFILTER_ADVANCED=y \
 	CONFIG_NFT_COMPAT=n \
 	CONFIG_NFT_QUEUE=n \
-	CONFIG_NF_TABLES_ARP=n \
-	CONFIG_NF_TABLES_BRIDGE=n \
 	$(KCONFIG_NFT_CORE)
 endef
 
@@ -860,10 +917,36 @@ endef
 $(eval $(call KernelPackage,nft-core))
 
 
+define KernelPackage/nft-arp
+  SUBMENU:=$(NF_MENU)
+  TITLE:=Netfilter nf_tables ARP table support
+  DEPENDS:=+kmod-nft-core
+  FILES:=$(foreach mod,$(NFT_ARP-m),$(LINUX_DIR)/net/$(mod).ko)
+  AUTOLOAD:=$(call AutoProbe,$(notdir $(NFT_ARP-m)))
+  KCONFIG:=$(KCONFIG_NFT_ARP)
+endef
+
+$(eval $(call KernelPackage,nft-arp))
+
+
+define KernelPackage/nft-bridge
+  SUBMENU:=$(NF_MENU)
+  TITLE:=Netfilter nf_tables bridge table support
+  DEPENDS:=+kmod-nft-core
+  FILES:=$(foreach mod,$(NFT_BRIDGE-m),$(LINUX_DIR)/net/$(mod).ko)
+  AUTOLOAD:=$(call AutoProbe,$(notdir $(NFT_BRIDGE-m)))
+  KCONFIG:= \
+	CONFIG_NF_LOG_BRIDGE=n \
+	$(KCONFIG_NFT_BRIDGE)
+endef
+
+$(eval $(call KernelPackage,nft-bridge))
+
+
 define KernelPackage/nft-nat
   SUBMENU:=$(NF_MENU)
   TITLE:=Netfilter nf_tables NAT support
-  DEPENDS:=+kmod-nft-core +kmod-nf-nat +kmod-nf-nat6
+  DEPENDS:=+kmod-nft-core +kmod-nf-nat
   FILES:=$(foreach mod,$(NFT_NAT-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(NFT_NAT-m)))
   KCONFIG:=$(KCONFIG_NFT_NAT)
@@ -875,11 +958,10 @@ $(eval $(call KernelPackage,nft-nat))
 define KernelPackage/nft-nat6
   SUBMENU:=$(NF_MENU)
   TITLE:=Netfilter nf_tables IPv6-NAT support
-  DEPENDS:=+kmod-nft-core +kmod-nf-nat6
+  DEPENDS:=+kmod-nft-nat +kmod-nf-nat6
   FILES:=$(foreach mod,$(NFT_NAT6-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(NFT_NAT6-m)))
   KCONFIG:=$(KCONFIG_NFT_NAT6)
 endef
 
 $(eval $(call KernelPackage,nft-nat6))
-

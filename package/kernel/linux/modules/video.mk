@@ -47,7 +47,7 @@ define KernelPackage/backlight-pwm
 	AUTOLOAD:=$(call AutoProbe,video pwm_bl)
 endef
 
-define KernelPackage/backlight/backlight-pwm
+define KernelPackage/backlight-pwm/description
 	Kernel module for PWM based Backlight support.
 endef
 
@@ -72,7 +72,7 @@ endef
 
 define KernelPackage/fb/x86
   FILES+=$(LINUX_DIR)/arch/x86/video/fbdev.ko
-  AUTOLOAD:=$(call AutoLoad,06,fbdev fb)
+  AUTOLOAD+=$(call AutoLoad,06,fbdev fb)
 endef
 
 $(eval $(call KernelPackage,fb))
@@ -81,7 +81,7 @@ $(eval $(call KernelPackage,fb))
 define KernelPackage/fbcon
   SUBMENU:=$(VIDEO_MENU)
   TITLE:=Framebuffer Console support
-  DEPENDS:=+kmod-fb
+  DEPENDS:=+kmod-fb @!LINUX_4_14
   KCONFIG:= \
 	CONFIG_FRAMEBUFFER_CONSOLE \
 	CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY=y \

@@ -319,6 +319,7 @@ ucidef_add_atm_bridge() {
 	local vci="$2"
 	local encaps="$3"
 	local payload="$4"
+	local nameprefix="$5"
 
 	json_select_object dsl
 		json_select_object atmbridge
@@ -326,6 +327,7 @@ ucidef_add_atm_bridge() {
 			json_add_int vci "$vci"
 			json_add_string encaps "$encaps"
 			json_add_string payload "$payload"
+			json_add_string nameprefix "$nameprefix"
 		json_select ..
 	json_select ..
 }
@@ -439,8 +441,8 @@ ucidef_set_led_rssi() {
 	local iface="$4"
 	local minq="$5"
 	local maxq="$6"
-	local offset="$7"
-	local factor="$8"
+	local offset="${7:-0}"
+	local factor="${8:-1}"
 
 	_ucidef_set_led_common "$1" "$2" "$3"
 

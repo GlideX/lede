@@ -23,6 +23,7 @@ HOSTCC ?= $(CC)
 export REVISION
 export SOURCE_DATE_EPOCH
 export GIT_CONFIG_PARAMETERS='core.autocrlf=false'
+export GIT_ASKPASS:=/bin/true
 export MAKE_JOBSERVER=$(filter --jobserver%,$(MAKEFLAGS))
 export GNU_HOST_NAME:=$(shell $(TOPDIR)/scripts/config.guess)
 export HOST_OS:=$(shell uname)
@@ -103,6 +104,9 @@ scripts/config/mconf:
 
 $(eval $(call rdep,scripts/config,scripts/config/mconf))
 
+scripts/config/qconf:
+	@$(_SINGLE)$(SUBMAKE) -s -C scripts/config qconf CC="$(HOSTCC_WRAPPER)"
+
 scripts/config/conf:
 	@$(_SINGLE)$(SUBMAKE) -s -C scripts/config conf CC="$(HOSTCC_WRAPPER)"
 
@@ -134,6 +138,12 @@ menuconfig: scripts/config/mconf prepare-tmpinfo FORCE
 	fi
 	[ -L .config ] && export KCONFIG_OVERWRITECONFIG=1; \
 		$< Config.in
+
+xconfig: scripts/config/qconf prepare-tmpinfo FORCE
+	if [ \! -e .config -a -e $(HOME)/.openwrt/defconfig ]; then \
+		cp $(HOME)/.openwrt/defconfig .config; \
+	fi
+	$< Config.in
 
 prepare_kernel_conf: .config FORCE
 
@@ -176,7 +186,7 @@ else
   DOWNLOAD_DIRS = package/download
 endif
 
-download: .config FORCE
+download: .config FORCE $(if $(wildcard $(TOPDIR)/staging_dir/host/bin/flock),,tools/flock/compile)
 	@+$(foreach dir,$(DOWNLOAD_DIRS),$(SUBMAKE) $(dir);)
 
 clean dirclean: .config
