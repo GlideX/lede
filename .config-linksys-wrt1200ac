@@ -83,6 +83,7 @@ CONFIG_DEFAULT_ebtables=y
 CONFIG_DEFAULT_firewall=y
 CONFIG_DEFAULT_fstools=y
 CONFIG_DEFAULT_gnupg=y
+CONFIG_DEFAULT_hostapd-utils=y
 CONFIG_DEFAULT_ip-full=y
 CONFIG_DEFAULT_ip6tables=y
 CONFIG_DEFAULT_iperf3=y
@@ -4995,7 +4996,7 @@ CONFIG_ETHTOOL_PRETTY_DUMP=y
 # CONFIG_PACKAGE_hostapd is not set
 CONFIG_PACKAGE_hostapd-common=y
 # CONFIG_PACKAGE_hostapd-mini is not set
-# CONFIG_PACKAGE_hostapd-utils is not set
+CONFIG_PACKAGE_hostapd-utils=y
 # CONFIG_PACKAGE_httping is not set
 # CONFIG_PACKAGE_httping-nossl is not set
 # CONFIG_PACKAGE_https_dns_proxy is not set
